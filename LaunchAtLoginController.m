@@ -45,15 +45,15 @@ void sharedFileListDidChange(LSSharedFileListRef inList, void *context) {
 - (id)init {
 	self = [super init];
 	if (self) {
-		loginItems = LSSharedFileListCreate(NULL, kLSSharedFileListSessionLoginItems, NULL);
-		LSSharedFileListAddObserver(loginItems, CFRunLoopGetMain(), (CFStringRef)NSDefaultRunLoopMode, sharedFileListDidChange, (__bridge void *)self);
+		self.loginItems = LSSharedFileListCreate(NULL, kLSSharedFileListSessionLoginItems, NULL);
+		LSSharedFileListAddObserver(self.loginItems, CFRunLoopGetMain(), (CFStringRef)NSDefaultRunLoopMode, sharedFileListDidChange, (__bridge void *)self);
 	}
 	return self;
 }
 
 - (void)dealloc {
-	LSSharedFileListRemoveObserver(loginItems, CFRunLoopGetMain(), (CFStringRef)NSDefaultRunLoopMode, sharedFileListDidChange, (__bridge void *)self);
-	CFRelease(loginItems);
+	LSSharedFileListRemoveObserver(self.loginItems, CFRunLoopGetMain(), (CFStringRef)NSDefaultRunLoopMode, sharedFileListDidChange, (__bridge void *)self);
+	CFRelease(self.loginItems);
 }
 
 #pragma mark Launch List Control
@@ -80,16 +80,16 @@ void sharedFileListDidChange(LSSharedFileListRef inList, void *context) {
 }
 
 - (BOOL)willLaunchAtLogin:(NSURL *)itemURL {
-	return !![self findItemWithURL:itemURL inFileList:loginItems];
+	return !![self findItemWithURL:itemURL inFileList:self.loginItems];
 }
 
 - (void)setLaunchAtLogin:(BOOL)enabled forURL:(NSURL *)itemURL {
-	LSSharedFileListItemRef appItem = [self findItemWithURL:itemURL inFileList:loginItems];
+	LSSharedFileListItemRef appItem = [self findItemWithURL:itemURL inFileList:self.loginItems];
 	if (enabled && !appItem) {
-		LSSharedFileListInsertItemURL(loginItems, kLSSharedFileListItemBeforeFirst, NULL, NULL, (__bridge CFURLRef)itemURL, NULL, NULL);
+		LSSharedFileListInsertItemURL(self.loginItems, kLSSharedFileListItemBeforeFirst, NULL, NULL, (__bridge CFURLRef)itemURL, NULL, NULL);
 	}
 	else if (!enabled && appItem)
-		LSSharedFileListItemRemove(loginItems, appItem);
+		LSSharedFileListItemRemove(self.loginItems, appItem);
 }
 
 #pragma mark Basic Interface
